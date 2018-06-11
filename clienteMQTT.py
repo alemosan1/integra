@@ -4,10 +4,9 @@
 import paho.mqtt.client as mqtt
 import time
 import cql
+import uuid
 from cassandra.cluster import Cluster
 
-from pyasn1_modules import pem, rfc2459
-from pyasn1.codec.der import decoder
 
 
 
@@ -28,7 +27,7 @@ broker_address="138.4.11.164"
 
 
 cluster = Cluster()
-session = cluster.connect('testdata')
+session = cluster.connect('integra')
 print("me conecte")
 
 ##Session
@@ -41,13 +40,6 @@ def on_message(client, userdata, message):
 
 
 
-
-	print ("he decodificado")
-
-
-	mensaje=str(message.payload.decode("utf-8")).split(';')
-	message = message[0]
-
 	print("message received " ,str(message.payload.decode("utf-8")))
 	print("message topic=",message.topic)
 	print("message qos=",message.qos)
@@ -56,23 +48,34 @@ def on_message(client, userdata, message):
 	strings = str(message.payload.decode("utf-8")).split(';')
 	
 	print(strings)
-
+	ID = str(uuid.uuid4())
+	
+	print (message.topic)
 
 	##Convertimos la información parseada en la query para insertar
-
-
+	
+	#Aqui vamos a sacar información del topic, interesante para la base de datos
+	
+	tipo = str(message.topic)
+	if tipo.find("temperature") is not -1 :
+		tipo = "temperature"
+			
+	# En string [0] viene el valor de la medida
+	# En string [1] viene el numero de secuencia
+	# En string [2] viene el tiempo
 	session.execute(
 	    """
-	    INSERT INTO integra (numse, medida,tiempo)
-	    VALUES (%s, %s, %s)
+	    INSERT INTO measures (uuid, mac_sensor,tiempo,tipo,valor)
+	    VALUES (%s, %s, %s, %s, %s)
 	    """,
-	    (strings[0], strings[1], float(strings[2]))
+	    (ID,"192.3.4.5",strings[2], tipo, float(strings[0]))
 	)
+	
 
 
 # Creating a client istance
 def on_connect( client, userdata, message):
-	client.subscribe("W1/#")
+	client.subscribe("hola/#")
 	
 
 
@@ -101,7 +104,7 @@ print ("Subscribiendome al topic ")
 
 
 # Aqui pongo al topic que me quiero subscribir 
-client.subscribe ("W1/#")
+client.subscribe ("/hola/temperature")
 
 
 
