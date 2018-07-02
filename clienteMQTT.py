@@ -57,19 +57,43 @@ def on_message(client, userdata, message):
 	#Aqui vamos a sacar información del topic, interesante para la base de datos
 	
 	tipo = str(message.topic)
+	modo = 0
 	if tipo.find("temperature") is not -1 :
 		tipo = "temperature"
+                envio ="""
+                            INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
+                                        VALUES (%s_mac, now(),%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))
+                     """
+               envio = envio.replace('%s_mac','\'192.3.4.5\'')                                    
+               envio = envio.replace('%s_tipo','\'temperature\'')
+               envio = envio.replace('%s_valor','50')                          
+               envio = envio.replace('%s_numseq','150')                          
+               print envio
+	if tipo.find("humidity") is not -1 :
+		tipo = "humidity"
+	if tipo.find("pir") is not -1 :
+		tipo = "pir"
+	if tipo.find("brightness") is not -1 :
+		tipo = "brightness"
+		modo = 1 
 			
 	# En string [0] viene el valor de la medida
 	# En string [1] viene el numero de secuencia
 	# En string [2] viene el tiempo
-	session.execute(
-	    """
-	    INSERT INTO measures (uuid, mac_sensor,tiempo,tipo,valor)
-	    VALUES (%s, %s, %s, %s, %s)
-	    """,
-	    (ID,"192.3.4.5",strings[2], tipo, float(strings[0]))
-	)
+	#TODO Cuidado que brightness tiene otro formato
+	
+
+	if modo != 1 :
+            session.execute(envio)    
+#	    session.execute(
+#	        """
+#	        INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
+#	        VALUES (%s, %s, %s, %s, %s)
+#	     """,
+#	     ("192.3.4.5","now()",tipo, float(strings[0]),int(strings[1]),"toTimestamp(now())")
+#	    )
+	else :
+
 	
 
 
@@ -104,7 +128,7 @@ print ("Subscribiendome al topic ")
 
 
 # Aqui pongo al topic que me quiero subscribir 
-client.subscribe ("/hola/temperature")
+client.subscribe ("#")
 
 
 
