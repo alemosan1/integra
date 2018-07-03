@@ -1,0 +1,36 @@
+#Ejecutar mosquitto
+
+$ sudo mosquitto -c /etc/mosquitto/mosquitto.conf
+
+#Ejecutar cassandra
+
+$ bin/cassandra
+
+
+# SE puede ejecutar un comando para ver si funciona 
+
+$ nodetool status
+
+# Crear una tabla de ejemplo ( como esta )
+
+    CREATE TABLE medidas2 (mac_sensor text,time timeuuid,tipo text,valor double,num_seq int,time_ins timestamp,PRIMARY KEY (mac_sensor,time));
+    CREATE TABLE medidas3 (mac_sensor text,time text,tipo text,valor double,num_seq int,time_ins timestamp,PRIMARY KEY (mac_sensor,time));
+
+# INSERTAR VALORES
+
+     INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq,time_ins) VALUES ('AB:CD:12:34', now(), 'temperatura',50,150, toTimestamp(now()));cqlsh:integra> select * from medidas2 ;
+
+	INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq,time_ins) VALUES ('AB:CD:12:34', "22:33:32", 'temperatura',50,150, toTimestamp(now()));cqlsh:integra> select * from 	medidas2 ;
+
+# Recordar instalar las librerias necesarias de PYTHON
+
+$ pip3 install paho-mqtt python-etcd
+$ pip3 install paho-mqtt python-etcd
+		
+También se puede instalar así.
+
+$ git clone https://github.com/eclipse/paho.mqtt.python.git
+$ cd paho.mqtt.python
+$ python setup.py install
+
+
