@@ -57,34 +57,58 @@ def on_message(client, userdata, message):
 	
 	tipo = str(message.topic)
 	modo = 1
-	envio = ""
-	if tipo.find("temperature") is not -1 :
-		tipo = "temperature"
-                envio ="""
-                            INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
-                            VALUES (%s_mac, now(),%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))
+	num_seq_pir = 0
+	num_seq_brightness = 0
+	envio ="""
+                            INSERT INTO medidas3 (mac_sensor, time, tipo, valor, num_seq, time_ins)
+                            VALUES (%s_mac, %s_time,%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))
                        """
-                envio = envio.replace('%s_mac','\'197.3.4.5\'')                                    
-                envio = envio.replace('%s_tipo','\'temperature\'')
-                envio = envio.replace('%s_valor','50')                          
-                envio = envio.replace('%s_numseq','150')                          
-                print envio
-	if tipo.find("humidity") is not -1 :
-		tipo = "humidity"
-	if tipo.find("pir") is not -1 :
-		tipo = "pir"
-	if tipo.find("brightness") is not -1 :
-		tipo = "brightness"
-		modo = 1 
-			
+
+	# Aqui hago un replace para insertar los valores que he recibido en el mensaje
 	# En string [0] viene el valor de la medida
 	# En string [1] viene el numero de secuencia
 	# En string [2] viene el tiempo
-	#TODO Cuidado que brightness tiene otro formato
+
+	
+        envio = envio.replace('%s_valor',strings[0][1:])                          
+       
+
+	#TODO aqui tengo que coger la MAC del topi y sustituirla aqui de alguna manera también
+	
+	envio = envio.replace('%s_mac','\'198.3.4.5\'')
+
+	if tipo.find("temperature") is not -1 :
+              
+                                                    
+                envio = envio.replace('%s_tipo','\'temperature\'')
+		envio = envio.replace('%s_numseq',strings[1])
+		envio = envio.replace('%s_time',"'"+strings[2])
+		
+		
+                                      
+
+	if tipo.find("humidity") is not -1 :
+
+ 		envio = envio.replace('%s_tipo','\'humidity\'')
+		envio = envio.replace('%s_numseq',strings[1])
+		envio = envio.replace('%s_time',"'"+strings[2])
+
+	if tipo.find("pir") is not -1 :
+
+		num_seq_pir += 1
+		envio = envio.replace('%s_tipo','\'pir\'')
+		envio = envio.replace('%s_numseq',str(num_seq_pir))
+		envio = envio.replace('%s_time',"\'"+strings[1])
+
+	if tipo.find("brightness") is not -1 :
+		num_seq_brightness += 1
+		envio = envio.replace('%s_tipo','\'brightness\'')
+		envio = envio.replace('%s_numseq',str(num_seq_brightness))		
+		envio = envio.replace('%s_time',"'"+strings[1])	
 	
 
-	if modo != 1 :
-        	session.execute(envio)    
+	print(envio)
+       	session.execute(envio)    
 #	    session.execute(
 #	        """
 #	        INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
@@ -92,11 +116,6 @@ def on_message(client, userdata, message):
 #	     """,
 #	     ("192.3.4.5","now()",tipo, float(strings[0]),int(strings[1]),"toTimestamp(now())")
 #	    )
-	else :
-		print "hola"
-
-	
-
 
 # Creating a client istance
 def on_connect( client, userdata, message):

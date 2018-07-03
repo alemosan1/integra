@@ -1,8 +1,24 @@
 
-contador=4;
+contador=1;
+
+
 
 while true;
-do mosquitto_pub -t "/hola/temperature" -m "41;24/03/2018;16:41:41" ; 
-let "contador++";
-sleep 5;
+
+
+
+do for element in sentencia1 sentencia2 sentencia3 sentencia4;
+   do	
+	sentencia1="mosquitto_pub -t '/hola/temperature' -m '41;15;16:41:${contador}'"
+	sentencia2="mosquitto_pub -t '/hola/humidity' -m '41;15;16:41:${contador}'"
+	sentencia3="mosquitto_pub -t '/hola/pir' -m '1;16:41:${contador}'"
+	sentencia4="mosquitto_pub -t '/hola/brightness' -m '2;16:41:${contador}'"
+
+	eval echo "\$$element"
+	eval  "\$$element"
+	let "contador++";
+	sleep 5;
+   done
 done
+
+
