@@ -1,0 +1,8 @@
+
+contador=4;
+
+while true;
+do mosquitto_pub -t "/hola/temperature" -m "41;24/03/2018;16:41:41" ; 
+let "contador++";
+sleep 5;
+done

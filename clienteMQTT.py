@@ -3,7 +3,6 @@
 
 import paho.mqtt.client as mqtt
 import time
-import cql
 import uuid
 from cassandra.cluster import Cluster
 
@@ -27,7 +26,7 @@ broker_address="138.4.11.164"
 
 
 cluster = Cluster()
-session = cluster.connect('integra')
+session = cluster.connect('integrando')
 print("me conecte")
 
 ##Session
@@ -39,7 +38,7 @@ print("me conecte")
 def on_message(client, userdata, message):
 
 
-
+	
 	print("message received " ,str(message.payload.decode("utf-8")))
 	print("message topic=",message.topic)
 	print("message qos=",message.qos)
@@ -57,18 +56,19 @@ def on_message(client, userdata, message):
 	#Aqui vamos a sacar información del topic, interesante para la base de datos
 	
 	tipo = str(message.topic)
-	modo = 0
+	modo = 1
+	envio = ""
 	if tipo.find("temperature") is not -1 :
 		tipo = "temperature"
                 envio ="""
                             INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
-                                        VALUES (%s_mac, now(),%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))
-                     """
-               envio = envio.replace('%s_mac','\'192.3.4.5\'')                                    
-               envio = envio.replace('%s_tipo','\'temperature\'')
-               envio = envio.replace('%s_valor','50')                          
-               envio = envio.replace('%s_numseq','150')                          
-               print envio
+                            VALUES (%s_mac, now(),%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))
+                       """
+                envio = envio.replace('%s_mac','\'197.3.4.5\'')                                    
+                envio = envio.replace('%s_tipo','\'temperature\'')
+                envio = envio.replace('%s_valor','50')                          
+                envio = envio.replace('%s_numseq','150')                          
+                print envio
 	if tipo.find("humidity") is not -1 :
 		tipo = "humidity"
 	if tipo.find("pir") is not -1 :
@@ -84,7 +84,7 @@ def on_message(client, userdata, message):
 	
 
 	if modo != 1 :
-            session.execute(envio)    
+        	session.execute(envio)    
 #	    session.execute(
 #	        """
 #	        INSERT INTO medidas2 (mac_sensor, time, tipo, valor, num_seq, time_ins)
@@ -93,6 +93,7 @@ def on_message(client, userdata, message):
 #	     ("192.3.4.5","now()",tipo, float(strings[0]),int(strings[1]),"toTimestamp(now())")
 #	    )
 	else :
+		print "hola"
 
 	
 
