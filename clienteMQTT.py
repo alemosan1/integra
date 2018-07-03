@@ -59,6 +59,7 @@ def on_message(client, userdata, message):
 	modo = 1
 	num_seq_pir = 0
 	num_seq_brightness = 0
+	#TODO mejorar la funcion s_time	
 	envio ="""
                             INSERT INTO medidas3 (mac_sensor, time, tipo, valor, num_seq, time_ins)
                             VALUES (%s_mac, %s_time,%s_tipo, %s_valor, %s_numseq,toTimestamp(now()))

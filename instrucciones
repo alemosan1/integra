@@ -25,12 +25,14 @@ $ nodetool status
 # Recordar instalar las librerias necesarias de PYTHON
 
 $ pip3 install paho-mqtt python-etcd
-$ pip3 install paho-mqtt python-etcd
+
 		
-También se puede instalar así.
+#También se puede instalar así.
 
 $ git clone https://github.com/eclipse/paho.mqtt.python.git
 $ cd paho.mqtt.python
 $ python setup.py install
 
+
+#Vamos a instalar Apaches ( link de configuracion - https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
 
