@@ -1,0 +1,49 @@
+var http = require('http');
+const cassandra = require('cassandra-driver');
+const client = new cassandra.Client({ contactPoints: ['127.0.0.1:9042'],
+				      keyspace: 'integrando' });
+
+const query = 'SELECT * FROM medidas3';
+console.log(' he conseguido la medida');
+	
+       var respuesta = [];
+       client.execute( query , function (err, result) {
+                  if (!err){
+		      if ( result.rows.length > 0 ) {
+		     
+		      	console.log("el array tiene una longitud de " + result.rows.length); 
+		      	for ( var i = 0 ; i < result.rows.length ; i++){
+		 		console.log('entre al for');
+	
+			      	for ( var key in result.rows[i]){
+					//console.log(key);
+					//console.log(result.rows[i]);
+		      			if ( result.rows[i].hasOwnProperty(key)){
+						respuesta.push(key + "->" + result.rows[i][key]+ "\t");
+						console.log(key + " -> " + result.rows[i][key]);
+					}
+				}
+				respuesta.push('\n');
+		      	}
+		      } else {
+		      console.log("No results");
+		      }
+	     	 }
+	      });  
+	  
+      
+
+http.createServer(function (req, res) {
+    res.writeHead(200, {'Content-Type': 'text/plain'});
+   
+    console.log(respuesta); 
+    for ( i = 0 ; i < respuesta.length ;i++){
+    var salida = respuesta[i];
+    console.log(salida);
+    res.write(salida);
+    }
+    res.end("Adios");
+   
+}).listen(3000, "127.0.0.1");
+console.log('Server running at http://127.0.0.1:3000/');
+

@@ -148,7 +148,7 @@ client.connect(broker_address)
 print ("Subscribiendome al topic ")
 
 
-# Aqui pongo al topic que me quiero subscribir 
+# Aqui pongo al topic que me quiero subscribir, pongo # para recibir cualquier mensaje
 client.subscribe ("#")
 
 

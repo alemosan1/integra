@@ -34,5 +34,12 @@ $ cd paho.mqtt.python
 $ python setup.py install
 
 
-#Vamos a instalar Apaches ( link de configuracion - https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
+#Podriamos instalar apache ( link de configuracion apache - https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
+
+#link configuracion NGINX ( Cuidado con tener activo apache2 en el puerto 80, da problemas de instalación ) 
+ --- Solución errores ( https://unix.stackexchange.com/questions/153980/problems-to-install-nginx-full-on-debian-8)
+	$ sudo apt-get install nginx 
+
+
+
 
