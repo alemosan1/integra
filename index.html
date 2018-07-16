@@ -5,41 +5,53 @@ const client = new cassandra.Client({ contactPoints: ['127.0.0.1:9042'],
 
 const query = 'SELECT * FROM medidas3';
 console.log(' he conseguido la medida');
-	
-       var respuesta = [];
-       client.execute( query , function (err, result) {
-                  if (!err){
-		      if ( result.rows.length > 0 ) {
-		     
-		      	console.log("el array tiene una longitud de " + result.rows.length); 
-		      	for ( var i = 0 ; i < result.rows.length ; i++){
-		 		console.log('entre al for');
-	
-			      	for ( var key in result.rows[i]){
-					//console.log(key);
-					//console.log(result.rows[i]);
-		      			if ( result.rows[i].hasOwnProperty(key)){
-						respuesta.push(key + "->" + result.rows[i][key]+ "\t");
-						console.log(key + " -> " + result.rows[i][key]);
+var respuesta = [];
+
+       function queryDate(date1){
+	  	
+		// hago una conversión a formato DATE para hacer la comparaciones.
+       	       date1=date1.substring(1,date1.end);
+	       date1=Date.parse('01/01/2011 '+ date1);
+	   
+	       client.execute( query , function (err, result) {
+		          if (!err){
+			      if ( result.rows.length > 0 ) {
+				respuesta=[];
+			     
+			      	console.log("el array tiene una longitud de " + result.rows.length); 
+			      	for ( var i = 0 ; i < result.rows.length ; i++){
+			 		//Aqui vamos a observar la fecha de inserción si es inferior desecho la entrada 
+					date2= Date.parse('01/01/2011 ' +result.rows[i]["time"]);
+					console.log(date2);
+					if (date1 > date2) continue;
+
+				      	for ( var key in result.rows[i]){
+						//console.log(key);
+						//console.log(result.rows[i]);
+			      			if ( result.rows[i].hasOwnProperty(key)){
+							respuesta.push(key + "->" + result.rows[i][key]+ "\t");
+							//console.log(key + " -> " + result.rows[i][key]);
+						}
 					}
-				}
-				respuesta.push('\n');
-		      	}
-		      } else {
-		      console.log("No results");
-		      }
-	     	 }
-	      });  
-	  
+					respuesta.push('\n');
+			      	}
+			      } else {
+			      console.log("No results");
+			      }
+		     	 }//console.log(respuesta);
+		      });
+		 
+	}
       
 
 http.createServer(function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/plain'});
-   
-    console.log(respuesta); 
+ 
+    queryDate(req.url)
+    //console.log(respuesta);
     for ( i = 0 ; i < respuesta.length ;i++){
     var salida = respuesta[i];
-    console.log(salida);
+    //console.log(salida);
     res.write(salida);
     }
     res.end("Adios");
