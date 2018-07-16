@@ -1,5 +1,7 @@
 
-contador=1;
+hora=10;
+minuto=10;
+contador=10;
 
 #TODO poner mas costantes
 
@@ -11,15 +13,26 @@ while true;
 
 do for element in sentencia1 sentencia2 sentencia3 sentencia4;
    do	
-	sentencia1="mosquitto_pub -t '/hola/temperature' -m '42;15;16:41:${contador}'"
-	sentencia2="mosquitto_pub -t '/hola/humidity' -m '41;15;16:41:${contador}'"
-	sentencia3="mosquitto_pub -t '/hola/pir' -m '1;16:41:${contador}'"
-	sentencia4="mosquitto_pub -t '/hola/brightness' -m '2;16:41:${contador}'"
+	sentencia1="mosquitto_pub -t '/hola/temperature' -m '42;15;${hora}:${minuto}:${contador}'"
+	sentencia2="mosquitto_pub -t '/hola/humidity' -m '41;15;${hora}:${minuto}:${contador}'"
+	sentencia3="mosquitto_pub -t '/hola/pir' -m '1;${hora}:${minuto}:${contador}'"
+	sentencia4="mosquitto_pub -t '/hola/brightness' -m '2;${hora}:${minuto}:${contador}'"
 
 	eval echo "\$$element"
 	eval  "\$$element"
 	let "contador++";
-	sleep 5;
+	
+	if [ $contador -eq 60 ]
+	then
+	    contador=10;
+	    let "minuto++";
+	fi
+   	if [ $minuto -eq 60 ]
+	then
+	    minuto=10;
+	    let "hora++";
+	fi
+	
    done
 done
 
