@@ -2,6 +2,65 @@ var express = require('express');
 const cassandra = require('cassandra-driver');
 var app = express();
 
+//DEJO MONGOOSE DE MOMENTO
+var mongoose = require('mongoose');
+//Connect ?
+//mongoose.connect('mongodb://localhost:27017')
+
+//Vamos con el cliente
+
+var MongoClient = require('mongodb').MongoClient;
+var url = "mongodb://localhost:27017/test";
+
+//TODO: Puede haber un problema si la base de datos ya esta creado
+//mirar alguna manera de que si ya esta creada no hay que volver a hacerlo
+
+MongoClient.connect(url, function(err, db) {
+  if (err) throw err;
+  var dbo = db.db("test");
+  dbo.createCollection("users", function(err, res) {
+    if (err) throw err;
+    console.log("Collection created!");
+    db.close();
+  });
+}); 
+
+// Include bodyparser
+var bodyparser = require('body-parser')
+app.use(bodyparser.json()); // support json encoded bodies
+app.use(bodyparser.urlencoded({ extended: true })); // support encoded bodies
+
+
+
+//esqeuma para la base de datos.
+
+var UserSchema = new mongoose.Schema({
+	email: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true
+  },
+  username: {
+    type: String,
+    unique: true,
+    required: true,
+    trim: true
+  },
+  password: {
+    type: String,
+    required: true,
+  },
+  passwordConf: {
+    type: String,
+    required: true,
+  }
+
+});
+
+var User= mongoose.model('User', UserSchema);
+
+module.export= User;
 
 
 
@@ -20,6 +79,76 @@ return (m.test(mac) && d.test(date))
 
 
 
+
+
+
+app.get('/login', function (req,res) {
+	res.send('<html>'
+		+	'<body>'
+		+		'<form method="post" action="/validate">'
+		+		 'Email-Address: <input type="text" name="email"><br>'
+		+		 'Username: <input type="text" name="username">'
+		+		 'Password: <input type="text" name="password"> <br>'
+		+		 'Confirm password <input type="text" name="passwordConf">'
+		+		 '<input type="submit" value="Send"/>'
+		+		'</form>'
+		+	'</body>'
+		+'</html>'
+		);
+});
+
+app.post('/validate', function (req,res){
+	// Supongo que significa que sea distinto de null
+	if (true) {
+		console.log('holi')
+		//console.log (req.body.email+req.body.username+req.body.password+
+		//	req.body.passwordConf)
+	  var userData = {
+	    email: req.body.email,
+	    username: req.body.username,
+	    password: req.body.password,
+	    passwordConf: req.body.passwordConf,
+	  }
+	  console.log(userData)
+  //use schema.create to insert data into the db
+
+
+
+
+	  MongoClient.connect(url, function(err, db) {
+	  if (err) {
+	  	console.log("Ha habido un error en la conexion")
+	  	throw err;
+	  }
+	  var dbo = db.db("test");
+	  //var myobj = { name: "Company Inc", address: "Highway 37" };
+	  dbo.collection("users").insertOne(userData, function(err, res) {
+	    if (err) {
+	    	console.log("Ha habido un error en la insercion")
+	    	throw err;
+	    } 
+	    console.log("1 document inserted");
+	    db.close();
+	    return res.redirect("/")
+	  });
+	});
+
+
+	//  User.create(userData, function (err, user) {
+	//     if (err) {
+	//     	console.log(err)
+	//       return res.redirect('/login')
+	//     } else {
+	//       console.log("Your entry has been saved")
+	//       return res.redirect('/');
+	//     }
+	//   });
+	// }else {
+	// 	return res.redirect('/login')
+	// }
+		}
+	});
+
 app.get('/', function (req,res) {
 	res.send('<html>'
 		+	'<body>'
@@ -29,7 +158,7 @@ app.get('/', function (req,res) {
 		+		 'To: <input type="text" name="date2" value="12:12:12" placeholder="HH:mm:ss"> <br>'
 		+		 'Tipo de medida:'      
 		+					' <select name="type" >'
-  		+						'<option value="temperature">Temperature</option>'
+  		+						'<option value="user">Temperature</option>'
   		+						'<option value="brightness">Brightness</option>'
   		+ 						'<option value="pir">PIR</option>'
  		+ 						'<option value="humidity">Humidity</option>'
