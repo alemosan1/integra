@@ -2,6 +2,9 @@ var express = require('express');
 const cassandra = require('cassandra-driver');
 var app = express();
 
+//constante para el hashing
+const bcrypt = require('bcrypt');
+
 //DEJO MONGOOSE DE MOMENTO
 var mongoose = require('mongoose');
 //Connect ?
@@ -77,36 +80,76 @@ return (m.test(mac) && d.test(date))
 }
 
 
+app.get('/', function (req,res) {
+	res.send('<html>'
+			+	'<body>'
+//			+ 		 '<input type="button" onclick="location.href='127.0.0.1:8080/login';" value="Login"/>'
+//			+		 '<input type="button" value="Registrarse"/>'
+			+	'<form method="get" action="/login">'
+			+		 '<input type="submit" value="Login"/>'
+			+	'</form>'
+			+	'<form method="get" action="/register">'
+			+		 '<input type="submit" value="Registrarse"/>'
+			+	'</form>'
+
+			+	'</body>'
+			+'</html>'
+			);
+	});
 
 
 
-
-
-app.get('/login', function (req,res) {
+app.get('/register', function (req,res) {
 	res.send('<html>'
 		+	'<body>'
-		+		'<form method="post" action="/validate">'
+		+		'<form method="get" action="/create">'
 		+		 'Email-Address: <input type="text" name="email"><br>'
 		+		 'Username: <input type="text" name="username">'
 		+		 'Password: <input type="text" name="password"> <br>'
-		+		 'Confirm password <input type="text" name="passwordConf">'
-		+		 '<input type="submit" value="Send"/>'
+		+		 'Confirm password <input type="text" name="passwordConf"><br>'
+		+		 '<input type="submit" value="Registrarse"/>'
 		+		'</form>'
 		+	'</body>'
 		+'</html>'
 		);
 });
 
-app.post('/validate', function (req,res){
+app.get('/login', function (req,res) {
+	res.send('<html>'
+		+	'<body>'
+		+		'<form method="post" action="/validate">'
+		+		 'Email-Address: <input type="text" name="email"><br>'
+		+		 'Password: <input type="text" name="password"> <br>'
+		+		 '<input type="submit" value="Registrarse"/>'
+		+		'</form>'
+		+	'</body>'
+		+'</html>'
+		);
+});
+
+app.post('/create', function (req,res){
 	// Supongo que significa que sea distinto de null
 	if (true) {
 		console.log('holi')
 		//console.log (req.body.email+req.body.username+req.body.password+
 		//	req.body.passwordConf)
+
+		// Before saving the password I'm gonna hash it to make this database safer
+		//FIXME: los tiron van por solucionar la asincronía que hay entre los dos métodos
+	  var BCRYPT_SALT_ROUNDS = 12;
+	  var password = req.body.password
+
+	  bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash){
+		    if (err) {
+		      return next(err);
+		    }
+		    password = hash;
+
+		  })
 	  var userData = {
 	    email: req.body.email,
 	    username: req.body.username,
-	    password: req.body.password,
+	    password: password,
 	    passwordConf: req.body.passwordConf,
 	  }
 	  console.log(userData)
@@ -129,27 +172,15 @@ app.post('/validate', function (req,res){
 	    } 
 	    console.log("1 document inserted");
 	    db.close();
-	    return res.redirect("/")
+	   
 	  });
 	});
 
-
-	//  User.create(userData, function (err, user) {
-	//     if (err) {
-	//     	console.log(err)
-	//       return res.redirect('/login')
-	//     } else {
-	//       console.log("Your entry has been saved")
-	//       return res.redirect('/');
-	//     }
-	//   });
-	// }else {
-	// 	return res.redirect('/login')
-	// }
+	 return res.redirect("/")
 		}
 	});
 
-app.get('/', function (req,res) {
+app.get('/data', function (req,res) {
 	res.send('<html>'
 		+	'<body>'
 		+		'<form method="get" action="/check">'
