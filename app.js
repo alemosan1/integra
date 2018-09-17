@@ -83,8 +83,7 @@ return (m.test(mac) && d.test(date))
 app.get('/', function (req,res) {
 	res.send('<html>'
 			+	'<body>'
-//			+ 		 '<input type="button" onclick="location.href='127.0.0.1:8080/login';" value="Login"/>'
-//			+		 '<input type="button" value="Registrarse"/>'
+
 			+	'<form method="get" action="/login">'
 			+		 '<input type="submit" value="Login"/>'
 			+	'</form>'
@@ -102,7 +101,7 @@ app.get('/', function (req,res) {
 app.get('/register', function (req,res) {
 	res.send('<html>'
 		+	'<body>'
-		+		'<form method="get" action="/create">'
+		+		'<form method="post" action="/create">'
 		+		 'Email-Address: <input type="text" name="email"><br>'
 		+		 'Username: <input type="text" name="username">'
 		+		 'Password: <input type="text" name="password"> <br>'
@@ -120,7 +119,7 @@ app.get('/login', function (req,res) {
 		+		'<form method="post" action="/validate">'
 		+		 'Email-Address: <input type="text" name="email"><br>'
 		+		 'Password: <input type="text" name="password"> <br>'
-		+		 '<input type="submit" value="Registrarse"/>'
+		+		 '<input type="submit" value="Logearse"/>'
 		+		'</form>'
 		+	'</body>'
 		+'</html>'
@@ -139,46 +138,99 @@ app.post('/create', function (req,res){
 	  var BCRYPT_SALT_ROUNDS = 12;
 	  var password = req.body.password
 
-	  bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash){
+	  bcrypt.hash(password, BCRYPT_SALT_ROUNDS, function (err, hash) {
 		    if (err) {
 		      return next(err);
 		    }
 		    password = hash;
+		    var userData = {
+	   		 email: req.body.email,
+	   		 username: req.body.username,
+	    	 password: password,
+	   		 passwordConf: req.body.passwordConf,
+	  		}
+	  		console.log(userData)
+		    connect(userData)
 
 		  })
-	  var userData = {
-	    email: req.body.email,
-	    username: req.body.username,
-	    password: password,
-	    passwordConf: req.body.passwordConf,
+
+
+	 function connect(userDataPasado){ 
+	 	MongoClient.connect(url, function(err, db) {
+		  if (err) {
+		  	console.log("Ha habido un error en la conexion")
+		  	throw err;
+		  }
+		  var dbo = db.db("test");
+		  //var myobj = { name: "Company Inc", address: "Highway 37" };
+		  dbo.collection("users").insertOne(userDataPasado, function(err, res) {
+		    if (err) {
+		    	console.log("Ha habido un error en la insercion")
+		    	throw err;
+		    } 
+		    console.log("1 document inserted");
+		    db.close();
+		   
+		  });
+		});
+	   }
+		 return res.redirect("/")
 	  }
-	  console.log(userData)
-  //use schema.create to insert data into the db
-
-
-
-
-	  MongoClient.connect(url, function(err, db) {
-	  if (err) {
-	  	console.log("Ha habido un error en la conexion")
-	  	throw err;
-	  }
-	  var dbo = db.db("test");
-	  //var myobj = { name: "Company Inc", address: "Highway 37" };
-	  dbo.collection("users").insertOne(userData, function(err, res) {
-	    if (err) {
-	    	console.log("Ha habido un error en la insercion")
-	    	throw err;
-	    } 
-	    console.log("1 document inserted");
-	    db.close();
-	   
-	  });
 	});
 
-	 return res.redirect("/")
-		}
-	});
+
+app.post('/validate', function (req,res) {
+	
+	//Obtengo todos los parametros indicados en el formulario
+	var email = req.body.email;
+	var password = req.body.password;
+
+	console.log(email);
+	console.log(password);
+
+		//ahora nos conectamos a la base de datos y comprobamos que esta el usuario
+		MongoClient.connect(url,function (err,db) {
+			console.log("estoy en la parate de conectarme")
+			
+			if (err) {
+		  		console.log("Ha habido un error en la conexion")
+		  		throw err;
+		    }
+
+		 	 var dbo = db.db("test");
+		 	 console.log("me conecte a test ")
+		 	 //hago la query que le envio a la base de datos
+		 	 var query = {email:email};
+		 	 console.log(query)
+		 	 //Ahora voy a buscar si el usuarios esta dentro de la base de datos
+		 	 dbo.collection("users").findOne(query,function(err,user){
+		 	 		
+		 	 		console.log(user);
+		 	 		if (err){
+		 	 			//Care this
+		 	 			throw err
+		 	 		} else if (!user) {
+		 	 			var err = new Error (' El usuario no está en la base de datos');
+		 	 			err.status=401;
+		 	 			//Como trato el error ahora
+		 	 		}
+		 	 		console.log(user)
+		 	 		db.close();
+
+		 	 		bcrypt.compare(password, user.password,function(err,result){
+
+		 	 			if (result===true){
+		 	 				return res.redirect("/data")
+		 	 			} else {
+		 	 				return res.redirect("/login")
+		 	 			}
+
+		 	 		})
+		 	 	})
+		})	
+	
+  });
+
 
 app.get('/data', function (req,res) {
 	res.send('<html>'
