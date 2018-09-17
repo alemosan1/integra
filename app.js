@@ -6,7 +6,7 @@ var app = express();
 const bcrypt = require('bcrypt');
 
 //DEJO MONGOOSE DE MOMENTO
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 //Connect ?
 //mongoose.connect('mongodb://localhost:27017')
 
@@ -35,35 +35,35 @@ app.use(bodyparser.urlencoded({ extended: true })); // support encoded bodies
 
 
 
-//esqeuma para la base de datos.
+//esquema para la base de datos.
 
-var UserSchema = new mongoose.Schema({
-	email: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true
-  },
-  username: {
-    type: String,
-    unique: true,
-    required: true,
-    trim: true
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  passwordConf: {
-    type: String,
-    required: true,
-  }
+// var UserSchema = new mongoose.Schema({
+// 	email: {
+//     type: String,
+//     unique: true,
+//     required: true,
+//     trim: true
+//   },
+//   username: {
+//     type: String,
+//     unique: true,
+//     required: true,
+//     trim: true
+//   },
+//   password: {
+//     type: String,
+//     required: true,
+//   },
+//   passwordConf: {
+//     type: String,
+//     required: true,
+//   }
 
-});
+// });
 
-var User= mongoose.model('User', UserSchema);
+// var User= mongoose.model('User', UserSchema);
 
-module.export= User;
+// module.export= User;
 
 
 
@@ -299,12 +299,12 @@ app.get('/check', function (req,res) {
 						console.log("la entrada es : " + entrada.tipo);
 						respuesta[i]=Object.assign({},entrada);
 						//respuesta[i]=entrada;
-						//console.log("la respuesta es "+respuesta[i]["mac_sensor"]);
+						console.log("la respuesta es "+respuesta[i]["mac_sensor"]);
 				 	  }			
 			}
 
-			//console.log("La longitud del array es : "+respuesta.length);
-			//console.log(" Al menos la entrada es : " +respuesta[0]);
+			console.log("La longitud del array es : "+respuesta.length);
+			console.log(" Al menos la entrada es : " +respuesta[0]);
 
 
 			//
@@ -339,7 +339,7 @@ app.get('/check', function (req,res) {
 				+		 mac +" esta es la MAC del sensor que vas a buscar <p>"
 				+		 date1+" esta es la fecha que vas a buscar"
 				+		 contenido
-				+		 '<a href="/"> try again </a>'
+				+		 '<a href="/data"> try again </a>'
 				+	'</body>'
 				+'</html>'
 				);
@@ -347,7 +347,7 @@ app.get('/check', function (req,res) {
 				res.send('<html>'
 				+	'<body>'
 				+		 'No ha habido resultados, lo sentimos'
-				+		 '<a href="/"> try again </a>'
+				+		 '<a href="/data"> try again </a>'
 				+	'</body>'
 				+'</html>'
 				);
@@ -367,7 +367,7 @@ app.get('/check', function (req,res) {
 		res.send('<html>'
 			+	'<body>'
 			+		 'Por favor revisa el formato de los parametros'
-			+		 '<a href="/"> try again </a>'
+			+		 '<a href="/data"> try again </a>'
 			+	'</body>'
 			+'</html>'
 			);
