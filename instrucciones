@@ -1,5 +1,6 @@
-#Instalar mosquitto
+#Instalar mosquitto y sus clientes ( para poder pub/sub)
 $ sudo apt-get install mosquitto
+$ sudo apt-get install mosquitto-clients
 
 #Ahora tenemos que realizar la configuración del fichero de mosquito con los puertos que vamos a utilizar. Poner en la parte siguiente:
 # =================================================================
@@ -38,9 +39,8 @@ cafile /etc/mosquitto/certs/ca.crt
 certfile /etc/mosquitto/certs/hostname.crt
 keyfile /etc/mosquitto/certs/hostname.key
 
-#Ahora tenemos que generar la claves
-
-https://stackoverflow.com/questions/44474516/how-to-create-public-and-private-key-with-openssl
+#Ahora tenemos que generar la claves (http://www.steves-internet-guide.com/mosquitto-tls/)
+# Seguir las instrucciones paso por paso, buena explicación
 
 #Ejecutar mosquitto
 
@@ -82,21 +82,27 @@ $ nodetool status
 
 # Recordar instalar las librerias necesarias de PYTHON
 
-$ pip3 install paho-mqtt python-etcd
+#Instalamos el driver de python con cassandra
+
+$ git clone https://github.com/datastax/python-driver
+$ cd paho.mqtt.python
+$ python setup.py install
 
 		
-#También se puede instalar así.
+#Instalamos el driver de python con mosquitto
 
 $ git clone https://github.com/eclipse/paho.mqtt.python.git
 $ cd paho.mqtt.python
 $ python setup.py install
 
+# Ahora teniendo el broker(mosquitto)y cassandra ejecutandose, arranco los dos scripts
 
-#Podriamos instalar apache ( link de configuracion apache - https://www.digitalocean.com/community/tutorials/how-to-install-the-apache-web-server-on-ubuntu-16-04)
+$ ./fillup
+$ python clientMQTT.py
 
-#link configuracion NGINX ( Cuidado con tener activo apache2 en el puerto 80, da problemas de instalación ) 
- --- Solución errores ( https://unix.stackexchange.com/questions/153980/problems-to-install-nginx-full-on-debian-8)
-	$ sudo apt-get install nginx 
+#Instalamos Nodejs
+
+$ sudo apt-get install nodejs
 
 # Instalacion de MongoDB
 	
@@ -133,3 +139,10 @@ $ python setup.py install
 - To open a mongoDB shell
 
 	$ mongo --host 127.0.0.1:27017
+
+#Dependencias NPM installadas
+$ sudo npm install bcrypt express cassandra-driver mongodb --save
+
+#Ahora ya ejecutamos la aplicación web con el siguiente comando(Se ejecuta en el puerto 8080 por defecto de localhost).
+
+$ node app.js

@@ -241,7 +241,7 @@ app.get('/data', function (req,res) {
 		+		 'To: <input type="text" name="date2" value="12:12:12" placeholder="HH:mm:ss"> <br>'
 		+		 'Tipo de medida:'      
 		+					' <select name="type" >'
-  		+						'<option value="user">Temperature</option>'
+  		+						'<option value="temperature">Temperature</option>'
   		+						'<option value="brightness">Brightness</option>'
   		+ 						'<option value="pir">PIR</option>'
  		+ 						'<option value="humidity">Humidity</option>'
