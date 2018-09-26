@@ -1,3 +1,47 @@
+#Instalar mosquitto
+$ sudo apt-get install mosquitto
+
+#Ahora tenemos que realizar la configuración del fichero de mosquito con los puertos que vamos a utilizar. Poner en la parte siguiente:
+# =================================================================
+# Default listener
+# =================================================================
+
+# IP address/hostname to bind the default listener to. If not
+# given, the default listener will not be bound to a specific 
+# address and so will be accessible to all network interfaces.
+# bind_address ip-address/host name
+#bind_address
+
+#Plain MQTT protocol
+listener 1883
+
+# End of plain MQTT configuration
+
+# MQTT over TLS/SSL
+listener 8883
+cafile /etc/mosquitto/certs/ca.crt
+certfile /etc/mosquitto/certs/hostname.crt
+keyfile /etc/mosquitto/certs/hostname.key
+
+# End of MQTT over TLS/SLL configuration
+
+# Plain WebSockets configuration
+listener 8083
+protocol websockets
+
+# End of plain Websockets configuration
+
+# WebSockets over TLS/SSL
+listener 9883
+protocol websockets
+cafile /etc/mosquitto/certs/ca.crt
+certfile /etc/mosquitto/certs/hostname.crt
+keyfile /etc/mosquitto/certs/hostname.key
+
+#Ahora tenemos que generar la claves
+
+https://stackoverflow.com/questions/44474516/how-to-create-public-and-private-key-with-openssl
+
 #Ejecutar mosquitto
 
 $ sudo mosquitto -c /etc/mosquitto/mosquitto.conf
@@ -33,6 +77,7 @@ $ nodetool status
 	
 	#Valor para la tabla medidas3
 	INSERT INTO medidas3 (mac_sensor, time, tipo, valor, num_seq,time_ins) VALUES ('AB:CD:12:34', '22:33:32', 'temperatura',50,150, toTimestamp(now()));
+
 
 
 # Recordar instalar las librerias necesarias de PYTHON
